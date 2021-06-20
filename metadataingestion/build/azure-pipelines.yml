@@ -1,0 +1,41 @@
+trigger:
+  branches:
+      include:
+      - '*'
+  paths:
+    include:
+    - Data2ScoopsAzureProject/metadataingestion/*
+
+jobs:
+ - job: MetaDataInputAzureSQL
+   displayName: Input metadata in Azure Sql
+
+   pool:
+     vmImage: 'ubuntu-latest'
+   steps:
+    
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.8'
+      displayName: 'Use Python 3.8'
+    
+    
+    - script: |
+        python -m pip install --upgrade pip
+      displayName: 'Upgrade pip'
+    
+    - script: |
+        pip install msrestazure
+        pip install azure-identity
+        pip install azure-keyvault-secrets
+        pip install pyodbc
+        pip install pandas
+        pip install xlrd
+      displayName: 'Installing other dependencies'
+    
+    
+    - task: PythonScript@0
+      inputs:
+        scriptSource: 'filePath'
+        scriptPath: $(Build.SourcesDirectory)/Data2ScoopsAzureProject/metadataingestion/script/Data2ScoopsMetdatda.py
+        workingDirectory: '$(build.sourcesDirectory)/Data2ScoopsAzureProject/metadataingestion/script'
